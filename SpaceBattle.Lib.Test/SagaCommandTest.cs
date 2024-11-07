@@ -6,10 +6,14 @@ using Moq;
 
 public class SagaCommandUnitTest {
 
+	Mock<SpaceBattle.Lib.ICommand> mckcmd;
+	Mock<SpaceBattle.Lib.ICommand> fkmckcmd;
+	Mock<SpaceBattle.Lib.ICommand> mckcompcmd;
+
 	public class AdaptStrategy : IStrategy {
 		public object run_strategy(params object[] args)
 		{
-			return new Mock<object>();
+			return new Mock<object>().Object;
 		}
 	}
 
@@ -26,20 +30,32 @@ public class SagaCommandUnitTest {
 				"Game.Adapter.AdaptForCmd",
 				(object[] args) => new AdaptStrategy().run_strategy(args)).Execute();
 
-		var mckcmd = new Mock<ICommand>();
+		this.mckcmd = new Mock<SpaceBattle.Lib.ICommand>();
 		mckcmd.Setup(cmd => cmd.Execute()).Verifiable();
-		var fkmckcmd = new Mock<ICommand>();
+		this.fkmckcmd = new Mock<SpaceBattle.Lib.ICommand>();
 		fkmckcmd.Setup(cmd => cmd.Execute()).Throws(new Exception()).Verifiable();
-		var mckcompcmd = new Mock<ICommand>();
+		this.mckcompcmd = new Mock<SpaceBattle.Lib.ICommand>();
 		mckcompcmd.Setup(cmd => cmd.Execute()).Verifiable();
 
 		IoC.Resolve<Hwdtech.ICommand>("IoC.Register",
 				"Game.Commands.CreateCommand",
-				(object[] args) => {return (string)args[1] == "ExceptionCommand" ? fkmckcmd : mckcmd;}).Execute();
+				(object[] args) =>
+				{return (string)args[0] == "ExceptionCommand" ? fkmckcmd.Object : mckcmd.Object;}).Execute();
 
 		IoC.Resolve<Hwdtech.ICommand>("IoC.Register",
-				"Game.Commands.CreateCompensatingCommand",
-				(object[] args) => mckcompcmd).Execute();
+				"Game.Saga.CreateCompensatingCommand",
+				(object[] args) => mckcompcmd.Object).Execute();
+	}
 
+	[Fact]
+    public void SuccessSagaCommand()
+    {
+		var uobj = new Mock<IUObject>();
+		SpaceBattle.Lib.ICommand scmd = IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Commands.SagaCommand",
+				"SuccessCommand", "AnotherSuccessCommand", uobj.Object);
+
+		scmd.Execute();
+
+		this.mckcmd.Verify();
 	}
 }
