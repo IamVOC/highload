@@ -1,0 +1,36 @@
+name: .NET
+
+on:
+  push:
+    branches: [ feature_Rotate, main ]
+  pull_request:
+    branches: [ feature_Rotate, main ]
+    
+  workflow_dispatch:
+    inputs:
+      reason:
+        required: true
+        default: 'Manual run'
+    
+    
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Setup test enviroment
+      run: dotnet tool install --global dotnet-coverage
+    - name: Test
+      run: dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
