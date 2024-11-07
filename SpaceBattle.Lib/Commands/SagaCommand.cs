@@ -16,7 +16,7 @@ public class SagaCommand : ICommand {
 			}
 		} catch {
 			count--;
-			for (; count >= this.cmds.Count; count++) {
+			for (; count >= 0; count--) {
 				var (_, compensCmd) = this.cmds[count];
 				compensCmd.Execute();
 			}
