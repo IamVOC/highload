@@ -58,4 +58,17 @@ public class SagaCommandUnitTest {
 
 		this.mckcmd.Verify();
 	}
+
+	[Fact]
+    public void FailedSagaCommand()
+    {
+		var uobj = new Mock<IUObject>();
+		SpaceBattle.Lib.ICommand scmd = IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Commands.SagaCommand",
+				"SuccessCommand", "ExceptionCommand", uobj.Object);
+
+		scmd.Execute();
+
+		this.mckcmd.Verify();
+		this.fkmckcmd.Verify();
+	}
 }
