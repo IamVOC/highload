@@ -44,7 +44,7 @@ public class SagaCommandUnitTest {
 
 		IoC.Resolve<Hwdtech.ICommand>("IoC.Register",
 				"Game.Saga.CreateCompensatingCommand",
-				(object[] args) => mckcompcmd.Object).Execute();
+				(object[] args) => {return mckcompcmd.Object;}).Execute();
 	}
 
 	[Fact]
@@ -52,7 +52,7 @@ public class SagaCommandUnitTest {
     {
 		var uobj = new Mock<IUObject>();
 		SpaceBattle.Lib.ICommand scmd = IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Commands.SagaCommand",
-				"SuccessCommand", "AnotherSuccessCommand", uobj.Object);
+				"SuccessCommand", "AnotherSuccessCommand", uobj.Object, 1);
 
 		scmd.Execute();
 
@@ -64,11 +64,24 @@ public class SagaCommandUnitTest {
     {
 		var uobj = new Mock<IUObject>();
 		SpaceBattle.Lib.ICommand scmd = IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Commands.SagaCommand",
-				"SuccessCommand", "ExceptionCommand", uobj.Object);
+				"SuccessCommand", "ExceptionCommand", uobj.Object, 1);
 
 		scmd.Execute();
 
 		this.mckcmd.Verify();
 		this.fkmckcmd.Verify();
+		this.mckcompcmd.Verify();
+	}
+
+	[Fact]
+    public void FullSuccessSagaCommand()
+    {
+		var uobj = new Mock<IUObject>();
+		SpaceBattle.Lib.ICommand scmd = IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Commands.SagaCommand",
+				"SuccessCommand", "AnotherSuccessCommand", "RetrySuccessCommand", uobj.Object, 1);
+
+		scmd.Execute();
+
+		this.mckcmd.Verify();
 	}
 }

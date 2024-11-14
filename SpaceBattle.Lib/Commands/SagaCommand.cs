@@ -1,28 +1,28 @@
 namespace SpaceBattle.Lib;
 
 public class SagaCommand : ICommand {
-	private IList<Tuple<ICommand, ICommand>> cmds;
-	private ICommand rot;
+	private IList<Tuple<ICommand, ICommand>> comp;
+	private ICommand pivot;
 	private IList<ICommand> ret;
 
-	public SagaCommand(IList<Tuple<ICommand, ICommand>> cmds, ICommand rot, IList<ICommand> ret) {
-		this.cmds = cmds;
-		this.rot = rot;
+	public SagaCommand(IList<Tuple<ICommand, ICommand>> comp, ICommand pivot, IList<ICommand> ret) {
+		this.comp = comp;
+		this.pivot = pivot;
 		this.ret = ret;
 	}
 
 	public void Execute() {
 		int count = 0;
 		try {
-			for (; count < this.cmds.Count; count++) {
-				var (cmd, _) = this.cmds[count];
+			for (; count < this.comp.Count; count++) {
+				var (cmd, _) = this.comp[count];
 				cmd.Execute();
 			}
-			this.rot.Execute();
+			this.pivot.Execute();
 		} catch {
 			count--;
 			for (; count >= 0; count--) {
-				var (_, compensCmd) = this.cmds[count];
+				var (_, compensCmd) = this.comp[count];
 				compensCmd.Execute();
 			}
 			return;
