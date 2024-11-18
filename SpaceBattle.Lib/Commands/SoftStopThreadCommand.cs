@@ -17,7 +17,7 @@ public class SoftStopThreadCommand : SpaceBattle.Lib.ICommand
         MyThread mt = IoC.Resolve<MyThread>("Game.Threads.GetThread", id);
         if (Thread.CurrentThread == mt.thread)
         {            
-			var rc = IoC.Resolve<IReciever>("Game.Threads.GetReciever", id);
+			var rc = IoC.Resolve<IReciever>("Game.Threads.Inner.GetReciever", id);
             new UpdateBehaviorCommand(mt, () => 
 				{ 
 					if (rc.isEmpty())
