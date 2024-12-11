@@ -2,9 +2,9 @@ name: .NET
 
 on:
   push:
-    branches: [ feature_Rotate, main ]
+    branches: [ message-sender, main ]
   pull_request:
-    branches: [ feature_Rotate, main ]
+    branches: [ message-sender, main ]
     
   workflow_dispatch:
     inputs:
