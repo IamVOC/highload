@@ -21,14 +21,17 @@ public class GameCommand : ICommand
 		var stime = DateTime.Now;
 		while(DateTime.Now - stime < tspan)
 		{
-			var cmd = q.Recieve();
-			try
+			if(!q.isEmpty())
 			{
-				cmd.Execute();
-			}
-			catch (Exception e)
-			{
-				IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Exception.ExceptionHandler", cmd, e).Execute();
+				var cmd = q.Recieve();
+				try
+				{
+					cmd.Execute();
+				}
+				catch (Exception e)
+				{
+					IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Exception.ExceptionHandler", cmd, e).Execute();
+				}
 			}
 		}
 	}
