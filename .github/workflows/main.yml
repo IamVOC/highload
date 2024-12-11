@@ -29,8 +29,9 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Setup test enviroment
-      run: dotnet tool install --global dotnet-coverage
-    - name: Test
-      run: dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      run: dotnet test --results-directory "test-results" --collect:"Code Coverage" --settings .runsettings
+    - run: dotnet tool update --global dotnet-coverage
+    - run: dotnet-coverage merge --output test-result.cobertura.xml --output-format cobertura "test-results/**/*.coverage"
+    - run: dotnet tool install --global dotnet-reportgenerator-globaltool
+    - run: reportgenerator -reports:test-result.cobertura.xml -targetdir:coverage-report -reporttypes:"MarkdownSummaryGithub"
+    - run: cat coverage-report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
