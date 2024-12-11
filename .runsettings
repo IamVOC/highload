@@ -10,6 +10,7 @@
 			  <Exclude>
 				  <Source>.*Api.*</Source>
 				  <Source>.*Program\.cs</Source>
+
 			  </Exclude>
 			</Sources>
 		  </CodeCoverage>

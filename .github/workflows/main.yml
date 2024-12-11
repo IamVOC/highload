@@ -2,9 +2,9 @@ name: .NET
 
 on:
   push:
-    branches: [ message-sender, main ]
+    branches: [ saga-command, main ]
   pull_request:
-    branches: [ message-sender, main ]
+    branches: [ saga-command, main ]
     
   workflow_dispatch:
     inputs:
