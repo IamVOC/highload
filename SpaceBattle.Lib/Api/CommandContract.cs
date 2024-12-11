@@ -21,4 +21,3 @@ public class CommandContract
     [OpenApiProperty(Description = "Properties for item")]
     public Dictionary<string, object> ?item_properties { get; set; }
 }
-
