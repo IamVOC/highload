@@ -1,5 +1,4 @@
 namespace SpaceBattle.Lib.Test;
-using Moq;
 
 public class AngleTests
 {
