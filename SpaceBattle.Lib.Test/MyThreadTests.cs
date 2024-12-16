@@ -10,8 +10,11 @@ public class MyThreadUnitTests
     public class SomeCol
     {
         public MyThread? tr;
-        public IReciever? rc;
-        public ISender? sd;
+        public IReciever? irc;
+        public ISender? isd;
+        public IReciever? orc;
+        public ISender? osd;
+
 
         public SomeCol() { }
     }
@@ -30,7 +33,7 @@ public class MyThreadUnitTests
         }
     }
 
-    public class SetRecieverStrategy
+    public class SetInnerRecieverStrategy
     {
         public object run_strategy(params object[] args)
         {
@@ -39,13 +42,13 @@ public class MyThreadUnitTests
             var allt = IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads");
             Action act = () =>
             {
-                allt[id].rc = new RecieverAdapter(q);
+                allt[id].irc = new RecieverAdapter(q);
             };
             return new CommandAdapter(act);
         }
     }
 
-    public class SetSenderStrategy
+    public class SetInnerSenderStrategy
     {
         public object run_strategy(params object[] args)
         {
@@ -54,11 +57,42 @@ public class MyThreadUnitTests
             var allt = IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads");
             Action act = () =>
             {
-                allt[id].sd = new SenderAdapter(q);
+                allt[id].isd = new SenderAdapter(q);
             };
             return new CommandAdapter(act);
         }
     }
+
+	public class SetOuterRecieverStrategy
+    {
+        public object run_strategy(params object[] args)
+        {
+            string id = (string)args[0];
+            BlockingCollection<SpaceBattle.Lib.ICommand> q = (BlockingCollection<SpaceBattle.Lib.ICommand>)args[1];
+            var allt = IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads");
+            Action act = () =>
+            {
+                allt[id].orc = new RecieverAdapter(q);
+            };
+            return new CommandAdapter(act);
+        }
+    }
+
+    public class SetOuterSenderStrategy
+    {
+        public object run_strategy(params object[] args)
+        {
+            string id = (string)args[0];
+            BlockingCollection<SpaceBattle.Lib.ICommand> q = (BlockingCollection<SpaceBattle.Lib.ICommand>)args[1];
+            var allt = IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads");
+            Action act = () =>
+            {
+                allt[id].osd = new SenderAdapter(q);
+            };
+            return new CommandAdapter(act);
+        }
+    }
+
 
     public class GetThreadStrategy
     {
@@ -69,21 +103,39 @@ public class MyThreadUnitTests
         }
     }
 
-    public class GetRecieverStrategy
+    public class GetInnerRecieverStrategy
     {
         public object run_strategy(params object[] args)
         {
             string id = (string)args[0];
-            return IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads")[id].rc!;
+            return IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads")[id].irc!;
         }
     }
 
-    public class GetSenderStrategy
+    public class GetInnerSenderStrategy
     {
         public object run_strategy(params object[] args)
         {
             string id = (string)args[0];
-            return IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads")[id].sd!;
+            return IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads")[id].isd!;
+        }
+    }
+
+	public class GetOuterRecieverStrategy
+    {
+        public object run_strategy(params object[] args)
+        {
+            string id = (string)args[0];
+            return IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads")[id].orc!;
+        }
+    }
+
+    public class GetOuterSenderStrategy
+    {
+        public object run_strategy(params object[] args)
+        {
+            string id = (string)args[0];
+            return IoC.Resolve<Dictionary<string, SomeCol>>("Game.Threads.AllThreads")[id].osd!;
         }
     }
 
@@ -141,20 +193,33 @@ public class MyThreadUnitTests
             var t1 = new SetThreadStrategy();
             IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.SetThread", (object[] args) => t1.run_strategy(args)).Execute();
 
-            var t2 = new SetRecieverStrategy();
-            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.SetReciever", (object[] args) => t2.run_strategy(args)).Execute();
+            var t2 = new SetInnerRecieverStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Inner.SetReciever", (object[] args) => t2.run_strategy(args)).Execute();
 
-            var t3 = new SetSenderStrategy();
-            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.SetSender", (object[] args) => t3.run_strategy(args)).Execute();
+            var t3 = new SetInnerSenderStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Inner.SetSender", (object[] args) => t3.run_strategy(args)).Execute();
+
+			var t21 = new SetOuterRecieverStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Outer.SetReciever", (object[] args) => t2.run_strategy(args)).Execute();
+
+            var t31 = new SetOuterSenderStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Outer.SetSender", (object[] args) => t3.run_strategy(args)).Execute();
+
 
             var t4 = new GetThreadStrategy();
             IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.GetThread", (object[] args) => t4.run_strategy(args)).Execute();
 
-            var t5 = new GetRecieverStrategy();
-            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.GetReciever", (object[] args) => t5.run_strategy(args)).Execute();
+            var t5 = new GetInnerRecieverStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Inner.GetReciever", (object[] args) => t5.run_strategy(args)).Execute();
 
-            var t6 = new GetSenderStrategy();
-            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.GetSender", (object[] args) => t6.run_strategy(args)).Execute();
+            var t6 = new GetInnerSenderStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Inner.GetSender", (object[] args) => t6.run_strategy(args)).Execute();
+
+			var t51 = new GetOuterRecieverStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Outer.GetReciever", (object[] args) => t5.run_strategy(args)).Execute();
+
+            var t61 = new GetOuterSenderStrategy();
+            IoC.Resolve<ICommand>("IoC.Register", "Game.Threads.Outer.GetSender", (object[] args) => t6.run_strategy(args)).Execute();
 
             var cmdadapt = new CommandAdapterStrategy();
             IoC.Resolve<ICommand>("IoC.Register", "Game.Adapters.CommandAdapter", (object[] args) => cmdadapt.run_strategy(args)).Execute();
@@ -245,7 +310,7 @@ public class MyThreadUnitTests
 		IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Commands.SendCommand", "1", fakecmd.Object).Execute();
 
 		waiter.WaitOne();
-		var rc = IoC.Resolve<IReciever>("Game.Threads.GetReciever", "1");
+		var rc = IoC.Resolve<IReciever>("Game.Threads.Inner.GetReciever", "1");
 		Assert.False(rc.isEmpty());
 	}
 
@@ -265,7 +330,7 @@ public class MyThreadUnitTests
 
 		waiter.WaitOne();
 		fakecmd.Verify();
-		var rc = IoC.Resolve<IReciever>("Game.Threads.GetReciever", "1");
+		var rc = IoC.Resolve<IReciever>("Game.Threads.Inner.GetReciever", "1");
 		Assert.True(rc.isEmpty());
 	}
 

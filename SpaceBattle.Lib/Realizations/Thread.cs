@@ -5,13 +5,15 @@ using System.Threading;
 public class MyThread
 {
     public Thread thread;
-    IReciever queue;
+    IReciever innerQueue;
+	IReciever outerQueue;
     bool stop = false;
     Action strategy;
 
-    public MyThread(IReciever queue)
+    public MyThread(IReciever innerQueue, IReciever outerQueue)
     {
-        this.queue = queue;
+        this.innerQueue = innerQueue;
+		this.outerQueue = outerQueue;
         strategy = () =>
         {
             HandleCommand();
@@ -26,8 +28,14 @@ public class MyThread
     }
     internal void HandleCommand()
     {
-        var cmd = queue.Recieve();
-        cmd.Execute();
+		if(!innerQueue.isEmpty()) {
+			var cmd = innerQueue.Recieve();
+			cmd.Execute();
+		}
+		if(!outerQueue.isEmpty()) {
+			var cmd = outerQueue.Recieve();
+			cmd.Execute();
+		}
     }
     internal void UpdateBehavior(Action newBehavior) => strategy = newBehavior;
     internal void Stop() => stop = true;

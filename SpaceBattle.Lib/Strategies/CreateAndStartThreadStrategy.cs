@@ -15,7 +15,7 @@ public class CreateAndStartThreadStrategy
         }
         Action delact = () =>
         {
-            IoC.Resolve<ISender>("Game.Threads.GetSender", id).Send(IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Adapters.CommandAdapter", act));
+            IoC.Resolve<ISender>("Game.Threads.Inner.GetSender", id).Send(IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Adapters.CommandAdapter", act));
         };
         var regact = IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Adapters.CommandAdapter", delact);
         object[] mcinp = new object[] { castc, regact };
