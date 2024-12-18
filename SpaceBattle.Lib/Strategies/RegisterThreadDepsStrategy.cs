@@ -33,6 +33,7 @@ public class RegisterThreadDepsStrategy : IStrategy
 			}).Execute();
 			IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Sessions.Scope", (object[] args) => scopes[(string)args[0]]).Execute();
 			IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Session.Create", (object[] args) => new GameCreatorStrategy().run_strategy(args)).Execute();
+			IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Scopes", (object[] args) => scopes.Keys).Execute();
 			IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Scope.Register.Dependencies", (object[] args) => new RegisterGameDepsStrategy().run_strategy(args)).Execute();
 			IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Commands.Deserialize", (object[] args) => new NullCommandStrategy().run_strategy(args)).Execute();
 		});

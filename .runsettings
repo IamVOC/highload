@@ -10,7 +10,7 @@
 			  <Exclude>
 				  <Source>.*Api.*</Source>
 				  <Source>.*Program\.cs</Source>
-
+				  <Source>.*TransitGameCommand\.cs</Source>
 			  </Exclude>
 			</Sources>
 		  </CodeCoverage>

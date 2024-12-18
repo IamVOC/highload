@@ -18,6 +18,16 @@ public class ThreadShardingDepsTest
 		SpaceBattle.Lib.ICommand gds = (SpaceBattle.Lib.ICommand)new RegisterGameDepsStrategy().run_strategy(ic);
 		gds.Execute();
 	}
+	[Fact]
+	public void GetTimespanTest()
+	{
+		var ts = new TimeSpan(200);
+		IoC.Resolve<SpaceBattle.Lib.ICommand>("Game.Sessions.Set.TimeSpan", ts).Execute();
+
+		var nts = IoC.Resolve<TimeSpan>("Game.Sessions.TimeSpan");
+
+		Assert.True(ts == nts);
+	}
 
 	[Fact]
 	public void GetObjectDepTest()
