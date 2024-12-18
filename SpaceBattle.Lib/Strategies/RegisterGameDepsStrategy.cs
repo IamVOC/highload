@@ -13,7 +13,9 @@ public class RegisterGameDepsStrategy : IStrategy
 		return new ActionCommand(() => {
 				Dictionary<string, IUObject> ships = new Dictionary<string, IUObject>() {};
 				Queue<SpaceBattle.Lib.ICommand> queue = new Queue<SpaceBattle.Lib.ICommand>();
-				IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Sessions.TimeSpan", (object[] args) => (object)new TimeSpan(100)).Execute();
+				object ts = new TimeSpan(100);
+				IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Sessions.TimeSpan", (object[] args) => ts).Execute();
+				IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Sessions.Set.TimeSpan", (object[] args) => new ActionCommand(() => ts = (object)args[0])).Execute();
 				IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Add.Object", (object[] args) => new ActionCommand(() => {ships[(string)args[0]] = (IUObject)args[1];})).Execute();
 				IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Get.Object", (object[] args) => ships[(string)args[0]]).Execute();	
 				IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Delete.Object", (object[] args) => new ActionCommand(() => {ships.Remove((string)args[0]);})).Execute();
