@@ -1,6 +1,7 @@
 namespace SpaceBattle.Lib;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 
 [ApiController]
@@ -43,6 +44,17 @@ public class SpaceBattleController : ControllerBase
 	{
 		ISender sender = _threadManager.GetSender(thread);
 		SpaceBattle.Lib.ICommand cmd = new CatchGameCommand(gameSchema, thread);
+		sender.Send(cmd);
+
+		return Ok();
+	}
+	[HttpPost("/outbox")]
+	public IActionResult SaveToOutbox([FromHeader(Name = "Thread-Id")] string thread)
+	{
+		ISender sender = _threadManager.GetSender(thread);
+		String rawJson = new StreamReader(Request.Body).ReadToEnd();
+		IHeaderDictionary rawHeaders = Request.Headers;
+		SpaceBattle.Lib.ICommand cmd = new SaveToOutboxCommand(rawJson, rawHeaders);
 		sender.Send(cmd);
 
 		return Ok();
