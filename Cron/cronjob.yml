@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: transactional-outbox
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: transactional-outbox
+            image: transact-outbox-job:latest
+            imagePullPolicy: IfNotPresent
+            command: ["python", "main.py"]
+            envFrom:
+            - secretRef:
+                name: postgres-secret
+          restartPolicy: OnFailure
+
